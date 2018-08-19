@@ -53,9 +53,10 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
 
         val results = traverse("", List(unit.body), comments.comments)
 
-        results.foreach { result =>
-          println(result)
-        }
+//        results.foreach { result =>
+//          println(result)
+//        }
+        println(JsonUtils.serialize(results))
       }
 
       private def getComment(comments: ListBuffer[(Position, String)], pos: Position): Option[String] = {
@@ -64,14 +65,6 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
         tookComments.lastOption.map(_._2)
       }
     }
-
-    sealed trait WithComment {
-      val name: String
-      val comment: Option[String]
-    }
-    case class ClassWithComment(name: String, comment: Option[String], members: Seq[WithComment]) extends WithComment
-    case class MethodWithComment(name: String, comment: Option[String]) extends WithComment
-    case class FieldWithComment(name: String, comment: Option[String]) extends WithComment
 
     class Comments extends ScaladocSyntaxAnalyzer[global.type](global){
       val comments = ListBuffer[(Position, String)]()
