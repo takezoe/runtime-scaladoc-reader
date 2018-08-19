@@ -11,15 +11,15 @@ object JsonUtils {
   }
 
   private def serializeClass(x: ClassWithComment): String = {
-    """{"name": "%s", comment: "%s", members: %s}""".format(escape(x.name), escape(x.comment.getOrElse("")), serialize(x.members))
+    """{"name": "%s", "comment": "%s", "members": %s}""".format(escape(x.name), escape(x.comment.getOrElse("")), serialize(x.members))
   }
 
   private def serializeMethod(x: MethodWithComment): String = {
-    """{"name": "%s", comment: "%s"}""".format(escape(x.name), escape(x.comment.getOrElse("")))
+    """{"name": "%s", "comment": "%s"}""".format(escape(x.name), escape(x.comment.getOrElse("")))
   }
 
   private def serializeField(x: FieldWithComment): String = {
-    """{"name": "%s", comment: "%s"}""".format(escape(x.name), escape(x.comment.getOrElse("")))
+    """{"name": "%s", "comment": "%s"}""".format(escape(x.name), escape(x.comment.getOrElse("")))
   }
 
   private def escape(s: String): String = s

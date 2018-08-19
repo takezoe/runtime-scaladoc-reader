@@ -1,5 +1,9 @@
 package com.github.takezoe.scaladoc
 
+import java.io.{File, FileOutputStream}
+import java.nio.charset.StandardCharsets
+import java.util.Properties
+
 import scala.tools.nsc
 import nsc.{Global, Phase}
 import nsc.plugins.Plugin
@@ -46,6 +50,7 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
         }
       }
 
+      def outputBase = new File("src/main/resources")
 
       override def apply(unit: CompilationUnit): Unit = {
         val comments = new Comments()
@@ -53,10 +58,10 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
 
         val results = traverse("", List(unit.body), comments.comments)
 
-//        results.foreach { result =>
-//          println(result)
-//        }
-        println(JsonUtils.serialize(results))
+        val file = new File(outputBase, unit.source.file.name.replaceFirst("\\.scala$", "") + "-comments.json")
+        val out = new FileOutputStream(file)
+        out.write(JsonUtils.serialize(results).getBytes(StandardCharsets.UTF_8))
+        out.close()
       }
 
       private def getComment(comments: ListBuffer[(Position, String)], pos: Position): Option[String] = {
