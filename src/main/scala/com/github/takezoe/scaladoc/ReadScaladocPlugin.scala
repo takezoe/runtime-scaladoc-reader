@@ -23,13 +23,17 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
 
     class ReadScaladocPhase(prev: Phase) extends StdPhase(prev) {
 
-      private def traverse(trees: List[Tree], comments: ListBuffer[(Position, String)]): Seq[WithComment] = {
+      private def traverse(packageName: String, trees: List[Tree], comments: ListBuffer[(Position, String)]): Seq[WithComment] = {
         trees.flatMap { tree =>
           tree match {
+            case x @ PackageDef(pid, stats) => {
+              traverse(x.pid.qualifier.toString, x.children, comments)
+            }
             case x @ ClassDef(_, _, _, _) => {
               val comment = getComment(comments, x.pos)
-              val members = traverse(x.impl.body, comments)
-              Seq(ClassWithComment(x.name.toString, comment, members))
+              val members = traverse(packageName, x.impl.body, comments)
+              val className = (if(packageName.isEmpty) x.name.toString else packageName + "." + x.name.toString)
+              Seq(ClassWithComment(className, comment, members))
             }
             case x @ DefDef(_, _, _, _, _, _) => {
               Seq(MethodWithComment(x.name.toString, getComment(comments, x.pos)))
@@ -37,7 +41,7 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
             case x @ ValDef(_, _, _, _) => {
               Seq(FieldWithComment(x.name.toString, getComment(comments, x.pos)))
             }
-            case x => traverse(x.children, comments)
+            case x => traverse(packageName, x.children, comments)
           }
         }
       }
@@ -47,7 +51,7 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
         val comments = new Comments()
         comments.parseComments(unit)
 
-        val results = traverse(List(unit.body), comments.comments)
+        val results = traverse("", List(unit.body), comments.comments)
 
         results.foreach { result =>
           println(result)
