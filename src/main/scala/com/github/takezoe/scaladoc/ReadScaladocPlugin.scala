@@ -1,8 +1,5 @@
 package com.github.takezoe.scaladoc
 
-import java.io.{File, FileOutputStream}
-import java.nio.charset.StandardCharsets
-
 import scala.tools.nsc
 import nsc.{Global, Phase}
 import nsc.plugins.Plugin
@@ -20,8 +17,7 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
     type GT = ReadScaladocPlugin.this.global.type
     override val global: GT = ReadScaladocPlugin.this.global
     override val phaseName: String = "ReadScaladoc"
-    override val runsAfter: List[String] = List("fields")
-    //override def newPhase(prev: Phase): Phase = new ReadScaladocPhase(prev)
+    override val runsAfter: List[String] = List("parser")
     override def newTransformer(unit: global.CompilationUnit): global.Transformer = new ScaladocTransformer
     import global._
 
@@ -36,34 +32,41 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
 
       val comments = new Comments()
 
-      override def transformUnit(unit: CompilationUnit) {
-        comments.parseComments(unit)
-        super.transformUnit(unit)
+      override def transformUnit(unit: CompilationUnit)= {
+        if(unit.source.file.name.endsWith(".scala")){
+          comments.parseComments(unit)
+          println(unit.getClass)
+          super.transformUnit(unit)
+        }
       }
 
+      @Scaladoc("asdkaopdkpakpoakspo")
       override def transform(tree: global.Tree): global.Tree = {
         tree match {
-//          case x @ PackageDef(pid, stats) => {
-//            traverse(x.pid.qualifier.toString, x.children, comments)
-//          }
+          case x @ PackageDef(pid, stats) => {
+            x.copy(x.pid, x.stats :+ insertImport)
+          }
           case x @ ClassDef(_, _, _, _) => {
-            val newAnnotations = createAnnotation("BooleanBeanProperty") :: x.mods.annotations
+            val newAnnotations = createAnnotation("Scaladoc") :: x.mods.annotations
             val newMods = x.mods.copy(annotations = newAnnotations)
 
 //            val comment = getComment(comments, x.pos)
 //            val members = traverse(packageName, x.impl.body, comments)
 //            val className = (if(packageName.isEmpty) x.name.toString else packageName + "." + x.name.toString)
-            global.treeCopy.ClassDef(tree, newMods, x.name, x.tparams, x.impl)
-            tree
-            //Seq(ClassWithComment(className, comment, members))
+
+
+            val newBody = x.impl.body.map(transform)
+            val newImpl = global.treeCopy.Template(x.impl, x.impl.parents, x.impl.self, newBody)
+            global.treeCopy.ClassDef(tree, newMods, x.name, x.tparams, newImpl)
           }
           case x @ DefDef(_, _, _, _, _, _) => {
+            val newAnnotations = createAnnotation("com.github.takezoe.scaladoc.Scaladoc") :: x.mods.annotations
+            val newMods = x.mods.copy(annotations = newAnnotations)
+            global.treeCopy.DefDef(tree, newMods, x.name, x.tparams, x.vparamss, x.tpt, x.rhs)
             tree
-            //Seq(MethodWithComment(x.name.toString, getComment(comments, x.pos)))
           }
           case x @ ValDef(_, _, _, _) => {
             tree
-            //Seq(FieldWithComment(x.name.toString, getComment(comments, x.pos)))
           }
           case x => super.transform(tree)
         }
@@ -73,53 +76,19 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
         global.Select(
           global.New(global.Ident(global.newTypeName(annotationName))),
           global.nme.CONSTRUCTOR), Nil)
-    }
 
-//    class ReadScaladocPhase(prev: Phase) extends StdPhase(prev) {
-//
-//      private def traverse(packageName: String, trees: List[Tree], comments: ListBuffer[(Position, String)]): Seq[WithComment] = {
-//        trees.flatMap { tree =>
-//          tree match {
-//            case x @ PackageDef(pid, stats) => {
-//              traverse(x.pid.qualifier.toString, x.children, comments)
-//            }
-//            case x @ ClassDef(_, _, _, _) => {
-//              val comment = getComment(comments, x.pos)
-//              val members = traverse(packageName, x.impl.body, comments)
-//              val className = (if(packageName.isEmpty) x.name.toString else packageName + "." + x.name.toString)
-//              Seq(ClassWithComment(className, comment, members))
-//            }
-//            case x @ DefDef(_, _, _, _, _, _) => {
-//              Seq(MethodWithComment(x.name.toString, getComment(comments, x.pos)))
-//            }
-//            case x @ ValDef(_, _, _, _) => {
-//              Seq(FieldWithComment(x.name.toString, getComment(comments, x.pos)))
-//            }
-//            case x => traverse(packageName, x.children, comments)
-//          }
-//        }
-//      }
-//
-//      def outputBase = new File("src/main/resources")
-//
-//      override def apply(unit: CompilationUnit): Unit = {
-//        val comments = new Comments()
-//        comments.parseComments(unit)
-//
-//        val results = traverse("", List(unit.body), comments.comments)
-//
-//        val file = new File(outputBase, unit.source.file.name.replaceFirst("\\.scala$", "") + "-comments.json")
-//        val out = new FileOutputStream(file)
-//        out.write(JsonUtils.serialize(results).getBytes(StandardCharsets.UTF_8))
-//        out.close()
-//      }
-//
-//      private def getComment(comments: ListBuffer[(Position, String)], pos: Position): Option[String] = {
-//        val tookComments = comments.takeWhile { case (x, _) => x.end < pos.start }
-//        comments --= (tookComments)
-//        tookComments.lastOption.map(_._2)
-//      }
-//    }
+      def insertImport: global.Tree = {
+        val importSelectors = global.ImportSelector(
+          global.newTermName("Scaladoc"), -1, global.newTermName("Scaladoc"), -1)
+
+        global.Import(
+          global.Select(global.Select(global.Select(global.Ident(
+            global.newTermName("com")),
+            global.newTermName("github")),
+            global.newTermName("takezoe")),
+            global.newTermName("scaladoc")), List(importSelectors))
+      }
+    }
 
     class Comments extends ScaladocSyntaxAnalyzer[global.type](global){
       val comments = ListBuffer[(Position, String)]()
