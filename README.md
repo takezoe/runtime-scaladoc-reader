@@ -4,7 +4,7 @@ A Scala compiler plugin to embed Scaladoc as annotations to allow to read Scalad
 
 ## Setup
 
-This compiler plugins hasn't released yet, so you need to publish this plugin to your local repository by yourself.
+This compiler plugins hasn't been released yet, so you need to publish this plugin to your local repository by yourself.
 
 ```
 $ git clone https://github.com/takezoe/read-scaladoc-plugin.git
