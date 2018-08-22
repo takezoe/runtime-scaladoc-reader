@@ -35,7 +35,6 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
       override def transformUnit(unit: CompilationUnit)= {
         if(unit.source.file.name.endsWith(".scala")){
           comments.parseComments(unit)
-          println(unit.getClass)
           super.transformUnit(unit)
         }
       }
@@ -43,26 +42,25 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
       @Scaladoc("asdkaopdkpakpoakspo")
       override def transform(tree: global.Tree): global.Tree = {
         tree match {
-          case x @ PackageDef(pid, stats) => {
-            x.copy(x.pid, x.stats :+ insertImport)
+          case x @ PackageDef(_, _) => {
+            x.copy(x.pid, List(insertImport) ++ x.stats.map(transform))
           }
           case x @ ClassDef(_, _, _, _) => {
-            val newAnnotations = createAnnotation("Scaladoc") :: x.mods.annotations
-            val newMods = x.mods.copy(annotations = newAnnotations)
-
-//            val comment = getComment(comments, x.pos)
-//            val members = traverse(packageName, x.impl.body, comments)
-//            val className = (if(packageName.isEmpty) x.name.toString else packageName + "." + x.name.toString)
-
-
-            val newBody = x.impl.body.map(transform)
-            val newImpl = global.treeCopy.Template(x.impl, x.impl.parents, x.impl.self, newBody)
-            global.treeCopy.ClassDef(tree, newMods, x.name, x.tparams, newImpl)
+            getComment(comments.comments, x.pos) match {
+              case Some(comment) =>
+                val newAnnotations = createAnnotation(comment) :: x.mods.annotations
+                val newMods = x.mods.copy(annotations = newAnnotations)
+                val newBody = x.impl.body.map(transform)
+                val newImpl = global.treeCopy.Template(x.impl, x.impl.parents, x.impl.self, newBody)
+                global.treeCopy.ClassDef(tree, newMods, x.name, x.tparams, newImpl)
+              case None =>
+                tree
+            }
           }
           case x @ DefDef(_, _, _, _, _, _) => {
-            val newAnnotations = createAnnotation("com.github.takezoe.scaladoc.Scaladoc") :: x.mods.annotations
-            val newMods = x.mods.copy(annotations = newAnnotations)
-            global.treeCopy.DefDef(tree, newMods, x.name, x.tparams, x.vparamss, x.tpt, x.rhs)
+//            val newAnnotations = createAnnotation("com.github.takezoe.scaladoc.Scaladoc") :: x.mods.annotations
+//            val newMods = x.mods.copy(annotations = newAnnotations)
+//            global.treeCopy.DefDef(tree, newMods, x.name, x.tparams, x.vparamss, x.tpt, x.rhs)
             tree
           }
           case x @ ValDef(_, _, _, _) => {
@@ -72,10 +70,11 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
         }
       }
 
-      private def createAnnotation(annotationName: String): global.Tree = global.Apply(
-        global.Select(
-          global.New(global.Ident(global.newTypeName(annotationName))),
-          global.nme.CONSTRUCTOR), Nil)
+      private def createAnnotation(comment: String): global.Tree =
+        global.Apply(
+          global.Select(global.New(global.Ident(global.newTypeName("Scaladoc"))),
+          global.nme.CONSTRUCTOR),
+          List(Literal(Constant(comment))))
 
       def insertImport: global.Tree = {
         val importSelectors = global.ImportSelector(
