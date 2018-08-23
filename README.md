@@ -31,7 +31,7 @@ package com.github.takezoe
  * Hello, World!
  */
 class HelloWorld {
-  
+  ...
 }
 ```
 
@@ -49,3 +49,5 @@ if(scaladoc != null){
   println(comment)
 }
 ```
+
+You can also get Scaladoc from `Method` and `Field` as same as `Class`.

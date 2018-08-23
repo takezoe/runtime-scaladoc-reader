@@ -58,13 +58,24 @@ class ReadScaladocPlugin(val global: Global) extends Plugin {
             }
           }
           case x @ DefDef(_, _, _, _, _, _) => {
-//            val newAnnotations = createAnnotation("com.github.takezoe.scaladoc.Scaladoc") :: x.mods.annotations
-//            val newMods = x.mods.copy(annotations = newAnnotations)
-//            global.treeCopy.DefDef(tree, newMods, x.name, x.tparams, x.vparamss, x.tpt, x.rhs)
-            tree
+            getComment(comments.comments, x.pos) match {
+              case Some(comment) =>
+                val newAnnotations = createAnnotation(comment) :: x.mods.annotations
+                val newMods = x.mods.copy(annotations = newAnnotations)
+                global.treeCopy.DefDef(tree, newMods, x.name, x.tparams, x.vparamss, x.tpt, x.rhs)
+              case None =>
+                tree
+            }
           }
           case x @ ValDef(_, _, _, _) => {
-            tree
+            getComment(comments.comments, x.pos) match {
+              case Some(comment) =>
+                val newAnnotations = createAnnotation(comment) :: x.mods.annotations
+                val newMods = x.mods.copy(annotations = newAnnotations)
+                global.treeCopy.ValDef(tree, newMods, x.name, x.tpt, x.rhs)
+              case None =>
+                tree
+            }
           }
           case x => super.transform(tree)
         }
