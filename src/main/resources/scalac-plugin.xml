@@ -1,4 +1,4 @@
 <plugin>
   <name>ReadScaladocPlugin</name>
-  <classname>com.github.takezoe.scaladoc.ReadScaladocPlugin</classname>
+  <classname>com.github.takezoe.scaladoc.EmbedScaladocAnnotationPlugin</classname>
 </plugin>

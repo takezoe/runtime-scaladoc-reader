@@ -8,15 +8,15 @@ import scala.collection.mutable.ListBuffer
 import scala.tools.nsc.doc.ScaladocSyntaxAnalyzer
 import scala.tools.nsc.transform.Transform
 
-class ReadScaladocPlugin(val global: Global) extends Plugin {
-  override val name: String = "readscaladoc"
+class EmbedScaladocAnnotationPlugin(val global: Global) extends Plugin {
+  override val name: String = "EmbedScaladocAnnotation"
   override val description: String = ""
   override val components: List[PluginComponent] = List[PluginComponent](MyComponent)
 
   private object MyComponent extends PluginComponent with Transform {
-    type GT = ReadScaladocPlugin.this.global.type
-    override val global: GT = ReadScaladocPlugin.this.global
-    override val phaseName: String = "ReadScaladoc"
+    type GT = EmbedScaladocAnnotationPlugin.this.global.type
+    override val global: GT = EmbedScaladocAnnotationPlugin.this.global
+    override val phaseName: String = "EmbedScaladocAnnotation"
     override val runsAfter: List[String] = List("parser")
     override def newTransformer(unit: global.CompilationUnit): global.Transformer = new ScaladocTransformer
     import global._
