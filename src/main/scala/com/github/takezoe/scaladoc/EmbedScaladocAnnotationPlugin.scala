@@ -24,12 +24,6 @@ class EmbedScaladocAnnotationPlugin(val global: Global) extends Plugin {
 
     class ScaladocTransformer extends global.Transformer {
 
-      private def getComment(comments: ListBuffer[(Position, String)], pos: Position): Option[String] = {
-        val tookComments = comments.takeWhile { case (x, _) => x.end < pos.start }
-        comments --= (tookComments)
-        tookComments.lastOption.map(_._2)
-      }
-
       val comments = new Comments()
 
       override def transformUnit(unit: CompilationUnit)= {
@@ -46,7 +40,7 @@ class EmbedScaladocAnnotationPlugin(val global: Global) extends Plugin {
             x.copy(x.pid, List(insertImport) ++ x.stats.map(transform))
           }
           case x @ ClassDef(_, _, _, _) => {
-            getComment(comments.comments, x.pos) match {
+            comments.getComment(x.pos) match {
               case Some(comment) =>
                 val newAnnotations = createAnnotation(comment) :: x.mods.annotations
                 val newMods = x.mods.copy(annotations = newAnnotations)
@@ -58,7 +52,7 @@ class EmbedScaladocAnnotationPlugin(val global: Global) extends Plugin {
             }
           }
           case x @ DefDef(_, _, _, _, _, _) => {
-            getComment(comments.comments, x.pos) match {
+            comments.getComment(x.pos) match {
               case Some(comment) =>
                 val newAnnotations = createAnnotation(comment) :: x.mods.annotations
                 val newMods = x.mods.copy(annotations = newAnnotations)
@@ -68,7 +62,7 @@ class EmbedScaladocAnnotationPlugin(val global: Global) extends Plugin {
             }
           }
           case x @ ValDef(_, _, _, _) => {
-            getComment(comments.comments, x.pos) match {
+            comments.getComment(x.pos) match {
               case Some(comment) =>
                 val newAnnotations = createAnnotation(comment) :: x.mods.annotations
                 val newMods = x.mods.copy(annotations = newAnnotations)
@@ -102,6 +96,12 @@ class EmbedScaladocAnnotationPlugin(val global: Global) extends Plugin {
 
     class Comments extends ScaladocSyntaxAnalyzer[global.type](global){
       val comments = ListBuffer[(Position, String)]()
+
+      def getComment(pos: Position): Option[String] = {
+        val tookComments = comments.takeWhile { case (x, _) => x.end < pos.start }
+        comments --= (tookComments)
+        tookComments.lastOption.map(_._2)
+      }
 
       def parseComments(unit: CompilationUnit): Unit = {
         comments.clear()
