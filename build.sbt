@@ -1,4 +1,4 @@
-name := "read-scaladoc-plugin"
+name := "runtime-scaladoc-reader"
 
 organization := "com.github.takezoe"
 

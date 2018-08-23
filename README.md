@@ -1,13 +1,13 @@
-# read-scaladoc-plugin
+# runtime-scaladoc-reader
 
-A Scala compiler plugin to embed Scaladoc as annotations to allow to read Scaladoc using reflection at runtime.
+Allows to read Scaladoc at runtime by embedding as annotation by the compiler plugin.
 
 ## Setup
 
 This compiler plugins hasn't been released yet, so you need to publish this plugin to your local repository by yourself.
 
 ```
-$ git clone https://github.com/takezoe/read-scaladoc-plugin.git
+$ git clone https://github.com/takezoe/runtime-scaladoc-reader.git
 $ cd read-scaladoc-plugin
 $ sbt publishLocal
 ```
@@ -15,9 +15,9 @@ $ sbt publishLocal
 Then add following configuration to your `build.sbt`:
 
 ```scala
-libraryDependencies += "com.github.takezoe" %% "read-scaladoc-plugin" % "0.0.1-SNAPSHOT"
+libraryDependencies += "com.github.takezoe" %% "runtime-scaladoc-reader" % "0.0.1-SNAPSHOT"
 
-addCompilerPlugin("com.github.takezoe" %% "read-scaladoc-plugin" % "0.0.1-SNAPSHOT")
+addCompilerPlugin("com.github.takezoe" %% "runtime-scaladoc-reader" % "0.0.1-SNAPSHOT")
 ```
 
 ## Usage
