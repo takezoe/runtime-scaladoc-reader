@@ -2,7 +2,7 @@ name := "runtime-scaladoc-reader"
 
 organization := "com.github.takezoe"
 
-version := "0.0.1-SNAPSHOT"
+version := "1.0.0"
 
 scalaVersion := "2.12.6"
 
