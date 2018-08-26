@@ -33,7 +33,6 @@ class EmbedScaladocAnnotationPlugin(val global: Global) extends Plugin {
         }
       }
 
-      @Scaladoc("asdkaopdkpakpoakspo")
       override def transform(tree: global.Tree): global.Tree = {
         tree match {
           case x @ PackageDef(_, _) => {
@@ -48,7 +47,9 @@ class EmbedScaladocAnnotationPlugin(val global: Global) extends Plugin {
                 val newImpl = global.treeCopy.Template(x.impl, x.impl.parents, x.impl.self, newBody)
                 global.treeCopy.ClassDef(tree, newMods, x.name, x.tparams, newImpl)
               case None =>
-                tree
+                val newBody = x.impl.body.map(transform)
+                val newImpl = global.treeCopy.Template(x.impl, x.impl.parents, x.impl.self, newBody)
+                global.treeCopy.ClassDef(tree, x.mods, x.name, x.tparams, newImpl)
             }
           }
           case x @ DefDef(_, _, _, _, _, _) => {
@@ -57,8 +58,7 @@ class EmbedScaladocAnnotationPlugin(val global: Global) extends Plugin {
                 val newAnnotations = createAnnotation(comment) :: x.mods.annotations
                 val newMods = x.mods.copy(annotations = newAnnotations)
                 global.treeCopy.DefDef(tree, newMods, x.name, x.tparams, x.vparamss, x.tpt, x.rhs)
-              case None =>
-                tree
+              case None => x
             }
           }
           case x @ ValDef(_, _, _, _) => {
@@ -67,11 +67,10 @@ class EmbedScaladocAnnotationPlugin(val global: Global) extends Plugin {
                 val newAnnotations = createAnnotation(comment) :: x.mods.annotations
                 val newMods = x.mods.copy(annotations = newAnnotations)
                 global.treeCopy.ValDef(tree, newMods, x.name, x.tpt, x.rhs)
-              case None =>
-                tree
+              case None => x
             }
           }
-          case x => super.transform(tree)
+          case x => super.transform(x)
         }
       }
 
