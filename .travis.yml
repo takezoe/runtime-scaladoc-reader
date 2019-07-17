@@ -4,3 +4,9 @@ jdk:
   - openjdk11
 script:
   - sbt scripted
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot
+    - $HOME/.sbt/launchers
+    - $HOME/.coursier
