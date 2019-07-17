@@ -4,7 +4,7 @@ organization := "com.github.takezoe"
 
 version := "1.0.2-SNAPSHOT"
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.8"
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-compiler" % scalaVersion.value
