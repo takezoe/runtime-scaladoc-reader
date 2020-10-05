@@ -4,15 +4,21 @@ organization := "com.github.takezoe"
 
 version := "1.0.2-SNAPSHOT"
 
-scalaVersion := "2.12.8"
+crossScalaVersions := Seq("2.13.3", "2.12.12")
+scalaVersion := crossScalaVersions.value.head
 
 libraryDependencies ++= Seq(
-  "org.scala-lang" % "scala-compiler" % scalaVersion.value
+  scalaOrganization.value % "scala-compiler" % scalaVersion.value,
+  "org.scalatest" %% "scalatest" % "3.0.8" % "test"
 )
-
-enablePlugins(ScriptedPlugin)
-
-scriptedBufferLog := false
+Test / scalacOptions ++= {
+  val jar = (Compile / packageBin).value
+  Seq(s"-Xplugin:${jar.getAbsolutePath}", s"-Jdummy=${jar.lastModified}") // ensures recompile
+}
+Test / scalacOptions += "-Yrangepos"
+Compile / console / scalacOptions := Seq("-language:_", "-Xplugin:" + (Compile / packageBin).value)
+Test / console / scalacOptions := (Compile / console / scalacOptions).value
+Test / fork := true
 
 publishMavenStyle := true
 
