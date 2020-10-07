@@ -2,7 +2,7 @@ name := "runtime-scaladoc-reader"
 
 organization := "com.github.takezoe"
 
-version := "1.0.2-SNAPSHOT"
+version := "1.0.2"
 
 crossScalaVersions := Seq("2.13.3", "2.12.12")
 scalaVersion := crossScalaVersions.value.head
