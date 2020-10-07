@@ -1,4 +1,4 @@
-# runtime-scaladoc-reader [![Build Status](https://travis-ci.org/takezoe/runtime-scaladoc-reader.svg?branch=master)](https://travis-ci.org/takezoe/runtime-scaladoc-reader) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.takezoe/runtime-scaladoc-reader_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.takezoe/runtime-scaladoc-reader_2.12) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/takezoe/runtime-scaladoc-reader/blob/master/LICENSE)
+# runtime-scaladoc-reader ![Scala CI](https://github.com/takezoe/runtime-scaladoc-reader/workflows/Scala%20CI/badge.svg) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.takezoe/runtime-scaladoc-reader_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.takezoe/runtime-scaladoc-reader_2.12) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/takezoe/runtime-scaladoc-reader/blob/master/LICENSE)
 
 Allows to read Scaladoc at runtime by embedding as annotation by the compiler plugin.
 
