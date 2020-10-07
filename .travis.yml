@@ -3,7 +3,7 @@ jdk:
   - openjdk8
   - openjdk11
 script:
-  - sbt scripted
+  - sbt +test
 cache:
   directories:
     - $HOME/.ivy2/cache
