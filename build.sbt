@@ -4,12 +4,12 @@ organization := "com.github.takezoe"
 
 version := "1.0.2"
 
-crossScalaVersions := Seq("2.13.3", "2.12.12")
+crossScalaVersions := Seq("2.13.4", "2.12.12")
 scalaVersion := crossScalaVersions.value.head
 
 libraryDependencies ++= Seq(
   scalaOrganization.value % "scala-compiler" % scalaVersion.value,
-  "org.scalatest" %% "scalatest" % "3.0.8" % "test"
+  "org.scalatest" %% "scalatest" % "3.2.3" % Test,
 )
 Test / scalacOptions ++= {
   val jar = (Compile / packageBin).value
@@ -30,7 +30,7 @@ publishTo := {
     Some("releases"  at nexus + "service/local/staging/deploy/maven2")
 }
 
-publishArtifact in Test := false
+Test / publishArtifact := false
 
 pomIncludeRepository := { _ => false }
 
