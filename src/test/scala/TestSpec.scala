@@ -1,8 +1,8 @@
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
 import com.github.takezoe.scaladoc.Scaladoc
 
-class SetSuite extends FunSuite {
+class SetSuite extends AnyFunSuite {
 
   test("class scaladoc") {
     val clazz = classOf[HelloWorld]
