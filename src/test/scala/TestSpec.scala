@@ -1,5 +1,5 @@
+import HelloWorld.InnerObject
 import org.scalatest.funsuite.AnyFunSuite
-
 import com.github.takezoe.scaladoc.Scaladoc
 
 class SetSuite extends AnyFunSuite {
@@ -13,12 +13,20 @@ class SetSuite extends AnyFunSuite {
                         |  */""".stripMargin)
   }
 
+  test("object scaladoc") {
+    val clazz = HelloWorld.getClass
+    val scaladoc = clazz.getAnnotation(classOf[Scaladoc])
+    val comment: String = scaladoc.value()
+    assert(comment == """/**
+                        |  * Hello, Companion!
+                        |  */""".stripMargin)
+  }
+
   test("field scaladoc") {
     val clazz = classOf[HelloWorld]
     val field = clazz.getDeclaredField("field")
     val scaladoc = field.getAnnotation(classOf[Scaladoc])
     val comment: String = scaladoc.value()
-    println(comment)
     assert(comment == """/**
                         |    * field
                         |    */""".stripMargin)
@@ -29,10 +37,23 @@ class SetSuite extends AnyFunSuite {
     val method = clazz.getDeclaredMethod("method")
     val scaladoc = method.getAnnotation(classOf[Scaladoc])
     val comment: String = scaladoc.value()
-    println(comment)
     assert(comment == """/**
                         |    * method
                         |    */""".stripMargin)
+  }
+
+  test("inner class scaladoc") {
+    val clazz = classOf[HelloWorld.InnerClass]
+    val scaladoc = clazz.getAnnotation(classOf[Scaladoc])
+    val comment: String = scaladoc.value()
+    assert(comment == """/** Inner class comment */""".stripMargin)
+  }
+
+  test("inner object scaladoc") {
+    val clazz = HelloWorld.InnerObject.getClass
+    val scaladoc = clazz.getAnnotation(classOf[Scaladoc])
+    val comment: String = scaladoc.value()
+    assert(comment == """/** Inner object comment */""".stripMargin)
   }
 
 }
@@ -53,4 +74,15 @@ class HelloWorld {
   def method(): Unit = {
   }
 
+}
+
+/**
+  * Hello, Companion!
+  */
+object HelloWorld {
+  /** Inner class comment */
+  class InnerClass()
+
+  /** Inner object comment */
+  case object InnerObject {}
 }
