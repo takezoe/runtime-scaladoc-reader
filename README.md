@@ -7,9 +7,9 @@ Allows to read Scaladoc at runtime by embedding as annotation by the compiler pl
 Add following configuration to your `build.sbt`:
 
 ```scala
-libraryDependencies += "com.github.takezoe" %% "runtime-scaladoc-reader" % "1.0.1"
+libraryDependencies += "com.github.takezoe" %% "runtime-scaladoc-reader" % "1.0.3"
 
-addCompilerPlugin("com.github.takezoe" %% "runtime-scaladoc-reader" % "1.0.1")
+addCompilerPlugin("com.github.takezoe" %% "runtime-scaladoc-reader" % "1.0.3")
 ```
 
 ## Usage
