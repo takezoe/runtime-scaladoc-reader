@@ -70,6 +70,20 @@ class EmbedScaladocAnnotationPlugin(val global: Global) extends Plugin {
               case None => x
             }
           }
+          case x @ ModuleDef(_, _, _) => {
+            comments.getComment(x.pos) match {
+              case Some(comment) =>
+                val newAnnotations = createAnnotation(comment) :: x.mods.annotations
+                val newMods = x.mods.copy(annotations = newAnnotations)
+                val newBody = x.impl.body.map(transform)
+                val newImpl = global.treeCopy.Template(x.impl, x.impl.parents, x.impl.self, newBody)
+                global.treeCopy.ModuleDef(tree, newMods, x.name, newImpl)
+              case None =>
+                val newBody = x.impl.body.map(transform)
+                val newImpl = global.treeCopy.Template(x.impl, x.impl.parents, x.impl.self, newBody)
+                global.treeCopy.ModuleDef(tree, x.mods, x.name, newImpl)
+            }
+          }
           case x => super.transform(x)
         }
       }
