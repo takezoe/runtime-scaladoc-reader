@@ -9,7 +9,7 @@ scalaVersion := crossScalaVersions.value.head
 
 libraryDependencies ++= Seq(
   scalaOrganization.value % "scala-compiler" % scalaVersion.value,
-  "org.scalatest" %% "scalatest" % "3.2.3" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.16" % Test
 )
 Test / scalacOptions ++= {
   val jar = (Compile / packageBin).value
