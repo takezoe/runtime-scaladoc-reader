@@ -8,19 +8,19 @@ import dotty.tools.dotc.core.Symbols.requiredClass
 import dotty.tools.dotc.core.StdNames.nme
 import dotty.tools.dotc.core.Comments.{Comment, docCtx}
 import dotty.tools.dotc.core.Annotations.Annotation
-
+import dotty.tools.dotc.typer.TyperPhase
 import dotty.tools.dotc.util.Spans
 
 class EmbedScaladocAnnotationPlugin extends StandardPlugin:
   override val name: String = "EmbedScaladocAnnotation"
   override val description: String = "Embeds Scaladoc comments as runtime annotations"
 
-  def init(options: List[String]): List[PluginPhase] =
+  override def init(options: List[String]): List[PluginPhase] =
     List(EmbedScaladocAnnotationPhase())
 
 class EmbedScaladocAnnotationPhase extends PluginPhase:
   val phaseName = "EmbedScaladocAnnotation"
-  override val runsAfter = Set("typer")
+  override val runsAfter = Set(TyperPhase.name)
   override val runsBefore = Set("checkUnusedPostTyper")
 
   private def addScaladocAnnotation(tree: DefTree)(using ctx: Context): Tree =

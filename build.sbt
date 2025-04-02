@@ -7,14 +7,6 @@ version := "1.1.0"
 crossScalaVersions := Seq("2.13.8", "2.12.15", "3.3.5")
 scalaVersion := crossScalaVersions.value.head
 
-Compile / unmanagedSourceDirectories += {
-  val sourceDir = (Compile / sourceDirectory).value
-  CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((3, _)) => sourceDir / "scala-3"
-    case _ => sourceDir / "scala-2"
-  }
-}
-
 libraryDependencies ++= {
   Seq(
     CrossVersion.partialVersion(scalaVersion.value) match {
