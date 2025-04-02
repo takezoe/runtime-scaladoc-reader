@@ -2,20 +2,39 @@ name := "runtime-scaladoc-reader"
 
 organization := "com.github.takezoe"
 
-version := "1.0.3"
+version := "1.1.0"
 
-crossScalaVersions := Seq("2.13.8", "2.12.15")
+crossScalaVersions := Seq("2.13.8", "2.12.15", "3.3.5")
 scalaVersion := crossScalaVersions.value.head
 
-libraryDependencies ++= Seq(
-  scalaOrganization.value % "scala-compiler" % scalaVersion.value,
-  "org.scalatest" %% "scalatest" % "3.2.3" % Test,
-)
+Compile / unmanagedSourceDirectories += {
+  val sourceDir = (Compile / sourceDirectory).value
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((3, _)) => sourceDir / "scala-3"
+    case _ => sourceDir / "scala-2"
+  }
+}
+
+libraryDependencies ++= {
+  Seq(
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((3, _)) => "org.scala-lang" % "scala3-compiler_3" % scalaVersion.value
+      case _ => "org.scala-lang" % "scala-compiler" % scalaVersion.value
+    },
+    "org.scalatest" %% "scalatest" % "3.2.9" % Test
+  )
+}
+
 Test / scalacOptions ++= {
   val jar = (Compile / packageBin).value
   Seq(s"-Xplugin:${jar.getAbsolutePath}", s"-Jdummy=${jar.lastModified}") // ensures recompile
 }
-Test / scalacOptions += "-Yrangepos"
+Test / scalacOptions ++= {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, _)) => Seq("-Yrangepos")
+    case _ => Seq.empty
+  }
+}
 Compile / console / scalacOptions := Seq("-language:_", "-Xplugin:" + (Compile / packageBin).value)
 Test / console / scalacOptions := (Compile / console / scalacOptions).value
 Test / fork := true
