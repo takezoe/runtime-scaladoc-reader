@@ -22,6 +22,11 @@ project/plugins/project/
 .idea/
 .idea_modules/
 
+# VSCode specific
+.vscode
+
 # Metals
+metals.sbt
 .metals
 .bloop
+.bsp
