@@ -13,7 +13,7 @@ libraryDependencies ++= {
       case Some((3, _)) => "org.scala-lang" % "scala3-compiler_3" % scalaVersion.value
       case _ => "org.scala-lang" % "scala-compiler" % scalaVersion.value
     },
-    "org.scalatest" %% "scalatest" % "3.2.9" % Test
+    "org.scalatest" %% "scalatest" % "3.2.16" % Test
   )
 }
 
