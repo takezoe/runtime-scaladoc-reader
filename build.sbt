@@ -2,9 +2,9 @@ name := "runtime-scaladoc-reader"
 
 organization := "com.github.takezoe"
 
-version := "1.1.0"
+version := "1.1.1-SNAPSHOT"
 
-crossScalaVersions := Seq("2.13.8", "2.12.15", "3.3.5")
+crossScalaVersions := Seq("2.13.16", "2.12.20", "3.3.5")
 scalaVersion := crossScalaVersions.value.head
 
 libraryDependencies ++= {
@@ -13,7 +13,7 @@ libraryDependencies ++= {
       case Some((3, _)) => "org.scala-lang" % "scala3-compiler_3" % scalaVersion.value
       case _ => "org.scala-lang" % "scala-compiler" % scalaVersion.value
     },
-    "org.scalatest" %% "scalatest" % "3.2.16" % Test
+    "org.scalatest" %% "scalatest" % "3.2.19" % Test
   )
 }
 
